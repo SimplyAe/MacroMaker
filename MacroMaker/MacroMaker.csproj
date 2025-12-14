@@ -5,6 +5,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <AssemblyName>MacroMaker</AssemblyName>
     <RootNamespace>MacroMaker</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
