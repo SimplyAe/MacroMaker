@@ -1,0 +1,190 @@
+<Window x:Class="MacroMaker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Macro Maker" Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Bar with Recording Controls -->
+        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" Padding="16" CornerRadius="0,0,12,12" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Title -->
+                <TextBlock Grid.Column="0" Text="Macro Maker" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"
+                           Foreground="{StaticResource PrimaryGradient}"/>
+
+                <!-- Recording Controls -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button x:Name="RecordButton" Content="● Record" Style="{StaticResource PrimaryButton}" 
+                            Click="RecordButton_Click" Width="120" Height="40" Margin="0,0,12,0"/>
+                    <Button x:Name="StopButton" Content="■ Stop" Style="{StaticResource ModernButton}" 
+                            Click="StopButton_Click" Width="100" Height="40" IsEnabled="False" Margin="0,0,12,0"/>
+                    <Button x:Name="PlayButton" Content="▶ Play" Style="{StaticResource ModernButton}" 
+                            Click="PlayButton_Click" Width="100" Height="40" IsEnabled="False"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1" Margin="16,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel: Macro List -->
+            <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" CornerRadius="12" Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Macros" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                    <!-- Search Box -->
+                    <TextBox x:Name="SearchBox" Grid.Row="1" Style="{StaticResource ModernTextBox}" 
+                             Margin="0,0,0,12" TextChanged="SearchBox_TextChanged">
+                        <TextBox.Text>
+                            <Binding Path="SearchText" UpdateSourceTrigger="PropertyChanged"/>
+                        </TextBox.Text>
+                    </TextBox>
+
+                    <!-- Macro List -->
+                    <ListBox x:Name="MacroListBox" Grid.Row="2" Style="{StaticResource ModernListBox}"
+                             SelectionChanged="MacroListBox_SelectionChanged">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource ModernListBoxItem}"/>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock Text="{Binding EventCount, StringFormat='{}{0} events'}" 
+                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <!-- Action Buttons -->
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,12,0,0" HorizontalAlignment="Center">
+                        <Button Content="Import" Style="{StaticResource ModernButton}" Click="ImportButton_Click" Margin="0,0,8,0" Width="80"/>
+                        <Button Content="Export" Style="{StaticResource ModernButton}" Click="ExportButton_Click" Width="80"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Center Panel: Macro Details -->
+            <Border Grid.Column="2" Background="{StaticResource SurfaceBrush}" CornerRadius="12" Padding="16">
+                <Grid x:Name="MacroDetailsPanel">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Macro Info -->
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="Macro Details" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                        
+                        <Label Content="Name:"/>
+                        <TextBox x:Name="MacroNameBox" Style="{StaticResource ModernTextBox}" Margin="0,4,0,12"/>
+                        
+                        <Label Content="Description:"/>
+                        <TextBox x:Name="MacroDescriptionBox" Style="{StaticResource ModernTextBox}" 
+                                 Height="60" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,4,0,12"/>
+                    </StackPanel>
+
+                    <!-- Event List -->
+                    <Border Grid.Row="1" Background="#0F172A" CornerRadius="8" Padding="12" Margin="0,12,0,12">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ListBox x:Name="EventListBox" Background="Transparent" BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="12" 
+                                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- Action Buttons -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Save" Style="{StaticResource PrimaryButton}" Click="SaveButton_Click" Margin="0,0,8,0" Width="100"/>
+                        <Button Content="Delete" Style="{StaticResource ModernButton}" Click="DeleteButton_Click" Width="100"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Right Panel: Settings -->
+            <Border Grid.Column="4" Background="{StaticResource SurfaceBrush}" CornerRadius="12" Padding="16">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Settings" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
+
+                        <!-- Playback Settings -->
+                        <TextBlock Text="Playback" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        
+                        <Label Content="Speed:"/>
+                        <Slider x:Name="SpeedSlider" Minimum="0.1" Maximum="5.0" Value="1.0" 
+                                TickFrequency="0.1" IsSnapToTickEnabled="True" Margin="0,4,0,4"/>
+                        <TextBlock Text="{Binding ElementName=SpeedSlider, Path=Value, StringFormat='{}Speed: {0:F1}x'}" 
+                                   Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,12"/>
+
+                        <Label Content="Loop Count:"/>
+                        <TextBox x:Name="LoopCountBox" Style="{StaticResource ModernTextBox}" Text="1" Margin="0,4,0,12"/>
+
+                        <!-- Humanization -->
+                        <TextBlock Text="Humanization" FontWeight="SemiBold" Margin="0,12,0,8"/>
+                        
+                        <Label Content="Level:"/>
+                        <Slider x:Name="HumanizationSlider" Minimum="0" Maximum="1.0" Value="0" 
+                                TickFrequency="0.1" IsSnapToTickEnabled="True" Margin="0,4,0,4"/>
+                        <TextBlock Text="{Binding ElementName=HumanizationSlider, Path=Value, StringFormat='{}Level: {0:P0}'}" 
+                                   Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,12"/>
+
+                        <!-- Hotkeys -->
+                        <TextBlock Text="Hotkeys" FontWeight="SemiBold" Margin="0,12,0,8"/>
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="F6 - Start Recording" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Text="F7 - Stop Recording" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+                            <TextBlock Text="F8 - Play Macro" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" Padding="16,8" CornerRadius="12,12,0,0" Margin="0,16,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock x:Name="StatusText" Grid.Column="0" Text="Ready" VerticalAlignment="Center"/>
+                <TextBlock x:Name="StatsText" Grid.Column="1" Text="0 macros loaded" 
+                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
